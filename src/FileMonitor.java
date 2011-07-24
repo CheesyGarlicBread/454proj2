@@ -66,7 +66,8 @@ public class FileMonitor
     if (!files_.containsKey (file)) {
       //long modifiedTime = file.exists() ? file.lastModified() : -1;
     	long modifiedTime = -2;
-      files_.put (file, new Long (modifiedTime));
+    	files_.put (file, new Long (modifiedTime));
+    	
     }
   }
   
@@ -79,7 +80,6 @@ public class FileMonitor
 	      long modifiedTime = directory.exists() ? directory.lastModified() : -1;
 	      directories_.put (directory, new Long (modifiedTime));
 	  }
-	  System.out.println("Adding directory  " + directory);
 	  addFilesFromDirectory(directory);
 	  
   }
@@ -88,8 +88,7 @@ public class FileMonitor
 	  //listen to files in folder
 	  File[] listOfFiles = directory.listFiles();
 	  for (int i = 0; i < listOfFiles.length; i++) {
-		  if (listOfFiles[i].isFile()) {
-			  System.out.println("Adding file " + listOfFiles[i]);
+		  if (listOfFiles[i].isFile()) {			  
 			  addFile(listOfFiles[i]);
 		  }
 	  }	 
@@ -178,7 +177,6 @@ public class FileMonitor
 
           // Check if file has changed
           if (newModifiedTime != lastModifiedTime) {
-        	 System.out.println("Folder changed.");
             // Register new modified time
             directories_.put (directory, new Long (newModifiedTime));
             addFilesFromDirectory(directory);
@@ -186,13 +184,14 @@ public class FileMonitor
       }
       
       Collection files = new ArrayList (files_.keySet());
+      
       for (Iterator i = files.iterator(); i.hasNext(); ) {
         File file = (File) i.next();
         
         
         long lastModifiedTime = ((Long) files_.get (file)).longValue();
         long newModifiedTime  = file.exists() ? file.lastModified() : -1;
-//System.out.println ( file + " " + newModifiedTime);
+
         // Check if file has changed
         if (newModifiedTime != lastModifiedTime) {
 
@@ -210,7 +209,7 @@ public class FileMonitor
             }else{              
               if(newModifiedTime == -1){
             	  listener.fileRemoved(file);
-              }else if(newModifiedTime == -2){
+              }else if(lastModifiedTime == -2){
             	  
             	  listener.fileAdded(file);            
               }else{

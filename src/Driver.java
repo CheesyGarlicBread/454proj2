@@ -56,7 +56,7 @@ public class Driver{
 	    monitor.addDirectory(folder);
 	    
 	    // Add a dummy listener
-	    monitor.addListener (new FileListenerImpl());
+	    monitor.addListener (new FileListenerImpl(peer));
 
 		while(true){
 

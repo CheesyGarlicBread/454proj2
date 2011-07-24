@@ -2,7 +2,10 @@ import java.io.File;
 
 
 public class FileListenerImpl implements FileListener{
-
+	private Peer peer;
+	public FileListenerImpl(Peer peer){
+		this.peer = peer;
+	}
 	@Override
 	public void fileChanged(File file) {
 		// TODO Auto-generated method stub
