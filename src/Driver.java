@@ -97,11 +97,11 @@ public class Driver {
 				}
 			}else if(c.equals("query")){
 				Status status = new Status();
-				returnCode = peer.query(status);			
+				//returnCode = peer.query(status);			
 			}else if(c.equals("join")){
-				returnCode = peer.join();
+				//returnCode = peer.join();
 			}else if(c.equals("leave")){
-				returnCode = peer.leave();
+				//returnCode = peer.leave();
 			}else{
 				returnCode = 500;
 			}
