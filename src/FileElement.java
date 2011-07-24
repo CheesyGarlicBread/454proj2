@@ -7,11 +7,13 @@ public class FileElement implements Serializable
 	public String filename;
 	public long filesize;
 	public boolean[] block_complete;
+	public boolean filecomplete;
 	public int[] block_available;
 	public String currentServer;
 	public LinkedList<FileElement> remoteList = new LinkedList<FileElement>();
-
-	public FileElement(String filename, long length, int chunkSize, String server) {
+	public int version;
+	
+	public FileElement(String filename, long length, int chunkSize, String server, int version, boolean complete) {
 		this.filename = filename;
 		this.filesize = length;
 		this.block_complete = new boolean[(int) (Math.ceil(length / chunkSize) + 1)];
@@ -19,5 +21,8 @@ public class FileElement implements Serializable
 
 		this.currentServer = server;
 		this.remoteList = null;
+		
+		this.version = version;
+		this.filecomplete = complete;
 	}
 }
