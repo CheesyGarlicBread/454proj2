@@ -192,7 +192,7 @@ public class FileMonitor
         
         long lastModifiedTime = ((Long) files_.get (file)).longValue();
         long newModifiedTime  = file.exists() ? file.lastModified() : -1;
-System.out.println ( file + " " + newModifiedTime);
+//System.out.println ( file + " " + newModifiedTime);
         // Check if file has changed
         if (newModifiedTime != lastModifiedTime) {
 
