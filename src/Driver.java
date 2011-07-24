@@ -8,9 +8,7 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 public class Driver{
-	
-	
-	
+
 	private static Peer peer;
 	private static PeerServer peerServer;
 	/**
