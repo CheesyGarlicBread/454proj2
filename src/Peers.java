@@ -25,7 +25,7 @@ public class Peers {
 				String port = st.nextToken();
 				if(!((localaddress.equals(ip) || localhostname.equals(ip)) && localport.equals(port))){
 					System.out.println("added peer to peer list: " + ip + " with port " + port);
-					Peer p = new Peer(ip, port, downloadFolder);
+					Peer p = new Peer(ip, port, downloadFolder, peersFile);
 					peers.add(p);
 				}
 			}
@@ -47,13 +47,5 @@ public class Peers {
 	public Vector<Peer> getPeers() {
 		return peers;
 	}
-
-	
-    	
-    
-    //Peer operator()(int i);
-    
-    // You will likely want to add methods such as visit()
-
 
 }

@@ -22,10 +22,10 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	final byte UNKNOWN = 4;
 	
 	public Peer() throws java.rmi.RemoteException {
-		this("localhost","10042", "");
+		this("localhost","10042", "", "");
 	}
 	
-	public Peer(String ip, String port,String downloadFolder) throws java.rmi.RemoteException {
+	public Peer(String ip, String port,String downloadFolder, String peersFile) throws java.rmi.RemoteException {
 		super();
 		this.status = new Status();
 		this.peers = new Peers();		
@@ -33,6 +33,9 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		this.port = port;
 		this.state = DISCONNECTED;
 		this.downloadFolder = downloadFolder;
+		
+		//initialize peers list
+		peers.initialize(peersFile, port, downloadFolder);
 	}
 	
 	public String getIp() {

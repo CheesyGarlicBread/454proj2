@@ -28,8 +28,8 @@ public class Driver{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		try{
 			String address = InetAddress.getLocalHost().getHostAddress();
-			peer = new Peer(address,localPort,downloadFolder);
-			peer.getPeers().initialize(peersFile, localPort,downloadFolder);
+			peer = new Peer(address,localPort,downloadFolder, peersFile);
+			
 			peerServer = new PeerServer(peer);
 			Thread t = new Thread(peerServer);
 			t.start();
