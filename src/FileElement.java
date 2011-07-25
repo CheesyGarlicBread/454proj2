@@ -1,5 +1,5 @@
 import java.io.Serializable;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class FileElement implements Serializable
 {
@@ -10,8 +10,9 @@ public class FileElement implements Serializable
 	public boolean filecomplete;
 	public int[] block_available;
 	public String currentServer;
-	public LinkedList<FileElement> remoteList = new LinkedList<FileElement>();
+	public ArrayList<FileElement> remoteList = new ArrayList<FileElement>();
 	public int version;
+	
 	
 	public FileElement(String filename, long length, int chunkSize, String server, int version, boolean complete) {
 		this.filename = filename;

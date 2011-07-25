@@ -209,8 +209,7 @@ public class FileMonitor
             }else{              
               if(newModifiedTime == -1){
             	  listener.fileRemoved(file);
-              }else if(lastModifiedTime == -2){
-            	  
+              }else if(lastModifiedTime == -2){            	  
             	  listener.fileAdded(file);            
               }else{
             	  listener.fileChanged(file);

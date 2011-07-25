@@ -1,11 +1,8 @@
 import java.io.*;
 
-import java.net.InetAddress;
+import java.net.*;
 import java.net.UnknownHostException;
 import java.rmi.*;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
 
 public class Driver{
 
@@ -24,17 +21,36 @@ public class Driver{
 		String peersFile = args[0];
 		String localPort = args[1];
 		String downloadFolder = args[2];
-		System.out.println("Started Client");
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println("Started Client");		
 		try{
 			String address = InetAddress.getLocalHost().getHostAddress();
-			peer = new Peer(address,localPort,downloadFolder, peersFile);
+			peer = new Peer(address,localPort,downloadFolder);
+			//initialize peers list
+			peer.getPeers().initialize(peersFile, localPort, downloadFolder);
 			
 			peerServer = new PeerServer(peer);
 			Thread t = new Thread(peerServer);
 			t.start();
+			
+			//check folder for changes
+			System.out.println("Watching for file changes in " + downloadFolder);
+			 // Create the monitor
+		    FileMonitor monitor = new FileMonitor (1000);
+		    File folder = new File(downloadFolder);
+		    
+		    // Add folder to listen for
+		    monitor.addDirectory(folder);
+		    
+		    // Add a dummy listener
+		    
+		    monitor.addListener (new FileListenerImpl(peer));
+
+			while(true){
+
+			}
 		}catch(RemoteException e){
-			System.out.println("Remote connection issue.");			
+			System.out.println(e);
+			System.out.println("Remote connection issue. EXITING");			
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -44,21 +60,7 @@ public class Driver{
 	    
 
 		
-		//check folder for changes
-		System.out.println("Watching for file changes in " + downloadFolder);
-		 // Create the monitor
-	    FileMonitor monitor = new FileMonitor (1000);
-	    File folder = new File(downloadFolder);
-	    
-	    // Add folder to listen for
-	    monitor.addDirectory(folder);
-	    
-	    // Add a dummy listener
-	    monitor.addListener (new FileListenerImpl(peer));
-
-		while(true){
-
-		}
+		
 		
 	}
 	

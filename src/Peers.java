@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Peers {
 	    
-    private Vector<Peer> peers = new Vector<Peer>();
+    private ArrayList<Peer> peers = new ArrayList<Peer>();
     
     // The peersFile is the name of a file that contains a list of the peers
     // Its format is as follows: in plaintext there are up to maxPeers lines,
@@ -21,11 +21,11 @@ public class Peers {
 			String localhostname = InetAddress.getLocalHost().getHostName();		
 			while((line = br.readLine()) != null){
 				StringTokenizer st = new StringTokenizer(line, " ");
-				String ip = st.nextToken();
-				String port = st.nextToken();
+				String ip = st.nextToken().trim();
+				String port = st.nextToken().trim();
 				if(!((localaddress.equals(ip) || localhostname.equals(ip)) && localport.equals(port))){
 					System.out.println("added peer to peer list: " + ip + " with port " + port);
-					Peer p = new Peer(ip, port, downloadFolder, peersFile);
+					Peer p = new Peer(ip, port, downloadFolder);
 					peers.add(p);
 				}
 			}
@@ -44,7 +44,7 @@ public class Peers {
     	return 0;
     }
 
-	public Vector<Peer> getPeers() {
+	public ArrayList<Peer> getPeers() {
 		return peers;
 	}
 
