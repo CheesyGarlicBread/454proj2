@@ -10,7 +10,7 @@ public class FileElement implements Serializable
 	public boolean filecomplete;
 	public int[] block_available;
 	public String currentServer;
-	public ArrayList<FileElement> remoteList = new ArrayList<FileElement>();
+	//public ArrayList<FileElement> remoteList = new ArrayList<FileElement>();
 	public int version;
 	
 	
@@ -21,7 +21,7 @@ public class FileElement implements Serializable
 		this.block_available = new int[(int) (Math.ceil(length / chunkSize) + 1)];
 
 		this.currentServer = server;
-		this.remoteList = null;
+		//this.remoteList = null;
 		
 		this.version = version;
 		this.filecomplete = complete;

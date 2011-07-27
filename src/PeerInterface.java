@@ -15,4 +15,6 @@ public interface PeerInterface extends java.rmi.Remote {
 	public int read(String filename, char buf[], int offset, int bufsize) throws RemoteException;
 	public int write(String filename, char buf[], int offset, int bufsize) throws RemoteException;
 	*/
+	void fileRemoved(FileElement file) throws RemoteException;
+	void fileChanged(FileElement file) throws RemoteException;
 }

@@ -14,7 +14,6 @@ public class FileListenerImpl implements FileListener{
 	}
 	
 	public void fileAdded(File file){
-		System.out.println("HALLELUJIAH");
 		System.out.println("File added: " + file.getAbsolutePath());
 		localPeer.addFile(file);
 	}

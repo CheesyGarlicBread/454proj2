@@ -35,7 +35,7 @@ public class Driver{
 			//check folder for changes
 			System.out.println("Watching for file changes in " + downloadFolder);
 			 // Create the monitor
-		    FileMonitor monitor = new FileMonitor (1000);
+		    FileMonitor monitor = new FileMonitor (2000);
 		    File folder = new File(downloadFolder);
 		    
 		    // Add folder to listen for
