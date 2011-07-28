@@ -251,7 +251,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 					//e.printStackTrace();
 				}
 				//RMI function call - Other peers update their files
-				if(newpeer.getState() != DISCONNECTED)
+				if((newpeer.getState() != DISCONNECTED) && (file.changedRemotely == false))
 					newpeer.fileChanged(file);
 			} catch (RemoteException e) {
 				//e.printStackTrace();
