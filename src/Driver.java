@@ -39,13 +39,19 @@ public class Driver{
 		    
 		    File folder = new File(downloadFolder);
 		    
-		    // Add folder to listen for
-		    monitor.addDirectory(folder);
+		    File hashMapFiles = new File("files.hckc");
+		    File hashMapFolders = new File("folders.hckc");
 		    
-		    // Add a dummy listener
-		    
-		    monitor.addListener (new FileListenerImpl(peer));
-		    monitor.restoreHashMaps();
+		    if(hashMapFiles.exists() && hashMapFolders.exists()){
+		    	System.out.println("Hash maps exist!");
+		    	monitor.restoreHashMaps();
+		    }else{
+		    	System.out.println("Hash maps dont exist!");
+		    	// Add folder to listen for
+		    	monitor.addDirectory(folder);		    
+		    	// Add a dummy listener		    
+		    	monitor.addListener (new FileListenerImpl(peer));
+		    }
 		    peer.connected();
 		    
 			while(true){
