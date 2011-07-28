@@ -380,22 +380,10 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			if(filesToProcess.isEmpty())
 				this.state = FULLYSYNCED;
 		}
-		else
+		else if (localFile.changed == true)
 		{
 			File newfile = new File(downloadFolder + file.filename + f.lastModified());
 			f.renameTo(newfile);
-			
-			//Re-download the file from the host
-			if(filesToProcess.isEmpty())
-				this.state = SYNCING;
-			
-			filesToProcess.add(file);
-			
-			downloadFile(file);
-			filesToProcess.remove();
-			
-			if(filesToProcess.isEmpty())
-				this.state = FULLYSYNCED;
 		}
 	}
 	
