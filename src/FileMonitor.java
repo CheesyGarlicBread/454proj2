@@ -2,8 +2,6 @@ import java.util.*;
 import java.io.File;
 import java.lang.ref.WeakReference;
 
-
-
 /**
  * Class for monitoring changes in disk files.
  * Usage:

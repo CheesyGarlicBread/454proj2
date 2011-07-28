@@ -320,11 +320,14 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		
 		filesToProcess.add(file);
 		
+		removeLocalFile(file);
+		
 		filesToProcess.remove();
 		
 		if(filesToProcess.isEmpty())
 			this.state = FULLYSYNCED;
-		removeFile(file);
+		
+		
 	}
 	
 	@Override
@@ -338,7 +341,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		}
 	}
 	
-	private int removeFile(FileElement file){
+	private int removeLocalFile(FileElement file){
 		
 		localList.remove(file);
 		
