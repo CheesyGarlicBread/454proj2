@@ -52,8 +52,9 @@ public class Driver{
 		    	// Add a dummy listener		    
 		    	monitor.addListener (new FileListenerImpl(peer));
 		    }
-		    peer.connected();
 		    
+		    peer.connected();
+		    monitor.start();
 			while(true){
 
 			}
