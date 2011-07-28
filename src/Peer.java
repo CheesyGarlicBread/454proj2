@@ -361,7 +361,26 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		if ((localFile.changed == false) && (file.changed == true))
 		{
 			removeFile(f);
-			addFile(f);			
+			addFile(f);
+			//Remove the file from the filesystem
+			boolean delsuccess = f.delete();
+			
+			if (delsuccess == false)
+			{
+				System.out.println("Failed to replace local file with updated version");
+			}
+			
+			//Re-download the file from the host
+			if(filesToProcess.isEmpty())
+				this.state = SYNCING;
+			
+			filesToProcess.add(file);
+			
+			downloadFile(file);
+			filesToProcess.remove();
+			
+			if(filesToProcess.isEmpty())
+				this.state = FULLYSYNCED;
 		}
 		else if (localFile.changed == true)
 		{
