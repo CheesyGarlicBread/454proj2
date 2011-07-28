@@ -226,6 +226,41 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			}
 		}
 	}
+	
+	private void notifyPeersChanged(FileElement file){
+		ArrayList<Peer> peerList = peers.getPeers();
+		
+		//Connect to each peer in peerList
+		for (int i = 0; i < peerList.size(); i++)
+		{
+			Peer p = peerList.get(i);
+			
+			if(p.getIp().equals(this.getIp()) && p.getPort().equals(this.getPort()) ) break;
+			
+			System.out.println("Telling peer " + p.getIp());
+			try {
+				//Connect to remote host
+				PeerInterface newpeer = null;
+				try {
+					newpeer = (PeerInterface)Naming.lookup("rmi://"+p.getIp()+":"+p.getPort()+"/PeerService");
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				} catch (NotBoundException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				}
+				//RMI function call - Other peers update their files
+				if(newpeer.getState() != DISCONNECTED)
+					newpeer.fileChanged(file);
+			} catch (RemoteException e) {
+				//e.printStackTrace();
+			} catch (NullPointerException e){
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	//client method
 	private void notifyPeersAdd(FileElement file){
 		ArrayList<Peer> peerList = peers.getPeers();
