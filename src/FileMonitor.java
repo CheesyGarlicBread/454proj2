@@ -257,8 +257,8 @@ public class FileMonitor
 			out2.close();
 			
 			
-			//System.out.println(files_);
-			//System.out.println(directories_);
+			System.out.println(files_);
+			System.out.println(directories_);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -302,8 +302,8 @@ public class FileMonitor
 			  //Close the input stream
 			  in1.close();
 			
-			//System.out.println(files_);
-			//System.out.println(directories_);
+			System.out.println(files_);
+			System.out.println(directories_);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
