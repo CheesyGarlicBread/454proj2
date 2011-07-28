@@ -358,7 +358,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		
 		FileElement localFile = localList.get(localList.indexOf(file));
 		//Local file dirty bit not set, so can just replace the local file.
-		if (localFile.changed = false)
+		if (localFile.changed == false)
 		{
 			//Remove the file from the filesystem
 			boolean delsuccess = f.delete();
