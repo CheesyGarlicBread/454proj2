@@ -1,8 +1,13 @@
 import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -24,8 +29,8 @@ import java.lang.ref.WeakReference;
 public class FileMonitor
 {
   private Timer       timer_;
-  private HashMap     files_;       // File -> Long
-  private HashMap	  directories_;
+  private HashMap<File, Long>     files_;       // File -> Long
+  private HashMap<File, Long>	  directories_;
   private Collection  listeners_;   // of WeakReference(FileListener)
    
 
@@ -36,8 +41,8 @@ public class FileMonitor
    */
   public FileMonitor (long pollingInterval)
   {
-    files_     = new HashMap();
-    directories_ = new HashMap();
+    files_     = new HashMap<File, Long>();
+    directories_ = new HashMap<File, Long>();
     listeners_ = new ArrayList();
 
     timer_ = new Timer (true);
@@ -171,7 +176,7 @@ public class FileMonitor
       // Use a copy of the list in case listener wants to alter the
       // list within its fileChanged method.
 
-      Collection directories = new ArrayList (directories_.keySet());
+      Collection<File> directories = new ArrayList (directories_.keySet());
       for (Iterator i = directories.iterator(); i.hasNext(); ) {
           File directory = (File) i.next();
           
@@ -187,7 +192,7 @@ public class FileMonitor
           }
       }
       
-      Collection files = new ArrayList (files_.keySet());
+      Collection<File> files = new ArrayList<File> (files_.keySet());
       
       for (Iterator i = files.iterator(); i.hasNext(); ) {
         File file = (File) i.next();
@@ -232,13 +237,28 @@ public class FileMonitor
   public void saveHashMaps(){
 		
 		try {
-			ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream("files.hckc"));
-			obj.writeObject(files_);
-			obj.close();
 			
-			ObjectOutputStream obj2 = new ObjectOutputStream(new FileOutputStream("folders.hckc"));
-			obj2.writeObject(directories_);
-			obj2.close();
+			FileWriter fstream = new FileWriter("files.hckc");
+			BufferedWriter out = new BufferedWriter(fstream);
+			Collection<File> files = new ArrayList (files_.keySet());
+		    for (Iterator i = files.iterator(); i.hasNext(); ) {
+		    	File file = (File) i.next();
+		    	out.write(file.getAbsolutePath() + "|" + files_.get(file) + "\n");
+		    }	
+			out.close();
+			
+			FileWriter fstream2 = new FileWriter("folders.hckc");
+			BufferedWriter out2 = new BufferedWriter(fstream2);
+			Collection<File> directories = new ArrayList (directories_.keySet());
+		    for (Iterator i = directories.iterator(); i.hasNext(); ) {
+		    	File directory = (File) i.next();
+		    	out2.write(directory.getAbsolutePath() + "|" + directories_.get(directory) + "\n");
+		    }	
+			out2.close();
+			
+			
+			//System.out.println(files_);
+			//System.out.println(directories_);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -249,20 +269,45 @@ public class FileMonitor
   public void restoreHashMaps(){
 		
 		try {
-			ObjectInputStream obj = new ObjectInputStream(new FileInputStream("files.hckc"));
-			files_ = (HashMap) obj.readObject();
-			obj.close();
+			FileInputStream fstream = new FileInputStream("files.hckc");
+			  // Get the object of DataInputStream
+			  DataInputStream in = new DataInputStream(fstream);
+			  BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			  String strLine;
+			  //Read File Line By Line
+			  while ((strLine = br.readLine()) != null)   {
+			  // Print the content on the console
+				  File f = new File(strLine.substring(0, strLine.indexOf("|")));
+				  Long l = Long.parseLong(strLine.substring(strLine.indexOf("|") + 1,strLine.length())); 
+				//  System.out.println(strLine.substring(strLine.indexOf("|") + 1,strLine.length()));
+				//  System.out.println(l);
+				  files_.put(f,l);
+			  }
+			  //Close the input stream
+			  in.close();
 			
-			ObjectInputStream obj2 = new ObjectInputStream(new FileInputStream("folders.hckc"));
-			directories_ = (HashMap) obj2.readObject();
-			obj2.close();
+			  FileInputStream fstream1 = new FileInputStream("folders.hckc");
+			  // Get the object of DataInputStream
+			  DataInputStream in1 = new DataInputStream(fstream1);
+			  BufferedReader br1 = new BufferedReader(new InputStreamReader(in1));
+			  String strLine1;
+			  //Read File Line By Line
+			  while ((strLine1 = br1.readLine()) != null)   {
+			  // Print the content on the console
+				  File f = new File(strLine1.substring(0, strLine1.indexOf("|")));
+				  Long l =  Long.parseLong(strLine1.substring(strLine1.indexOf("|") + 1,strLine1.length()));
+				//  System.out.println(l);
+				  //directories_.put(f,l);
+			  }
+			  //Close the input stream
+			  in1.close();
+			
+			//System.out.println(files_);
+			//System.out.println(directories_);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		}
+			e.printStackTrace();
+		} 
 		
   }
 }
