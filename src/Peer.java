@@ -495,7 +495,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			e.printStackTrace();
 			
 		}
-		newfile.renameTo(new File("downloadFolder + file.filename"));
+		newfile.renameTo(new File(downloadFolder + file.filename));
 		//System.out.println("Finished downloadFile()");
 		return 0;
 	}
