@@ -436,40 +436,40 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		fe.changedRemotely = false;
 	}
 	
-	private int removeLocalFile(FileElement file){
-		
+	private int removeLocalFile(FileElement file)
+	{
+		//Why is this done twice?
 		localList.remove(file);
 		
-		
 		System.out.println("Removing local file");
-		 String fileName = "file.txt";
-		    // A File object to represent the filename
-		    File f = new File(downloadFolder + file.filename);
+		String fileName = "file.txt";
+	    // A File object to represent the filename
+	    File f = new File(downloadFolder + file.filename);
 
-		    // Make sure the file or directory exists and isn't write protected
-		    if (!f.exists())
-		      throw new IllegalArgumentException(
-		          "Delete: no such file or directory: " + fileName);
+	    // Make sure the file or directory exists and isn't write protected
+	    if (!f.exists())
+	      throw new IllegalArgumentException(
+	          "Delete: no such file or directory: " + fileName);
 
-		    if (!f.canWrite())
-		      throw new IllegalArgumentException("Delete: write protected: "
-		          + fileName);
+	    if (!f.canWrite())
+	      throw new IllegalArgumentException("Delete: write protected: "
+	          + fileName);
 
-		    // If it is a directory, make sure it is empty
-		    if (f.isDirectory()) {
-		      String[] files = f.list();
-		      if (files.length > 0)
-		        throw new IllegalArgumentException(
-		            "Delete: directory not empty: " + fileName);
-		    }
+	    // If it is a directory, make sure it is empty
+	    if (f.isDirectory()) {
+	      String[] files = f.list();
+	      if (files.length > 0)
+	        throw new IllegalArgumentException(
+	            "Delete: directory not empty: " + fileName);
+	    }
 
-		    // Attempt to delete it
-		    boolean success = f.delete();
-
-		    if (!success)
-		      throw new IllegalArgumentException("Delete: deletion failed");
-		    
-		    return 1;
+	    // Attempt to delete it
+	    boolean success = f.delete();
+	    
+	    if (!success)
+	      throw new IllegalArgumentException("Delete: deletion failed");
+	    
+	    return 1;
 	}
 	
 	//client will call this to download a file
