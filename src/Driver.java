@@ -45,6 +45,8 @@ public class Driver{
 		    
 		    monitor.addListener (new FileListenerImpl(peer));
 
+		    peer.connected();
+		    
 			while(true){
 
 			}

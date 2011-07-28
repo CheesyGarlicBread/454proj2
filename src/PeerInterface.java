@@ -17,4 +17,5 @@ public interface PeerInterface extends java.rmi.Remote {
 	*/
 	void fileRemoved(FileElement file) throws RemoteException;
 	void fileChanged(FileElement file) throws RemoteException;
+	public ArrayList<FileElement> getFiles() throws RemoteException;
 }

@@ -14,12 +14,15 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	private byte state;
 	final static int chunkSize = 65536;
 	
-	private ArrayList<String> localFiles = new ArrayList<String>();
+	
 	private ArrayList<FileElement> localList = new ArrayList<FileElement>();
+	private Queue<FileElement> filesToProcess = new LinkedList<FileElement>();
 	
 	final byte CONNECTED = 0;
 	final byte DISCONNECTED = 1;
 	final byte UNKNOWN = 2;
+	final byte FULLYSYNCED = 4;
+	final byte SYNCING = 8;
 	
 	public Peer() throws java.rmi.RemoteException {
 		this("localhost","10042", "");
@@ -27,14 +30,13 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	
 	public Peer(String ip, String port,String downloadFolder) throws java.rmi.RemoteException {
 		super();
+		
 		this.status = new Status();
 		this.peers = new Peers();		
 		this.ip = ip;
 		this.port = port;
 		this.state = CONNECTED;
 		this.downloadFolder = downloadFolder;
-		
-		
 	}
 	
 	public String getIp() {
@@ -95,19 +97,16 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		Arrays.fill(newElement.block_complete, true);
 				
 		//If localFiles vector already contains the filename, error out
-		if ((localFiles.contains(filename)) || (localList.contains(newElement)))
+		if ((localList.contains(newElement)))
 		{
 			System.out.println("ERROR: File already exists on local host");
 			return;
 		}
 		
-		//Add new filename into localFiles arraylist
-		localFiles.add(filename);
-		
 		//Insert FileElement object into arraylist
 		localList.add(newElement);
 		
-		if (state == CONNECTED){
+		if (state != DISCONNECTED){
 			System.out.println("Notifying peers of update");
 			//notify peers of update
 			notifyPeersAdd(newElement);
@@ -124,16 +123,17 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		
 		//remove it from peer list
 		FileElement fe = null;
-		localFiles.remove(localFiles.indexOf(file.getName()));
+		
 		for(int i = 0; i < localList.size(); i ++){
 			if(localList.get(i).filename.equals(file.getName())){
 				fe = localList.get(i);
+				localList.remove(i);
 			}
 		}
 		//(alternatively, we could just tell every other peer to remove just this file instead of updating peer list)
 		
 		//broadcast changes
-		if (state == CONNECTED){
+		if (state != DISCONNECTED){
 			System.out.println("Notifying peers of update");
 			//notify peers of update
 			if(fe != null)
@@ -147,6 +147,57 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	public void changeFile(File file){
 		
 	}
+	
+	public void connected(){
+		notifyPeersConnected();
+		this.state = FULLYSYNCED;
+	}
+	
+	private void notifyPeersConnected(){
+		ArrayList<Peer> peerList = peers.getPeers();
+		
+		//Connect to each peer in peerList
+		for (int i = 0; i < peerList.size(); i++)
+		{
+			Peer p = peerList.get(i);
+			
+			if(p.getIp().equals(this.getIp()) && p.getPort().equals(this.getPort()) ) break;
+			
+			
+			try {
+				//Connect to remote host
+				PeerInterface newpeer = null;
+				try {
+					newpeer = (PeerInterface)Naming.lookup("rmi://"+p.getIp()+":"+p.getPort()+"/PeerService");
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				} catch (NotBoundException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				}
+				//RMI function call - Other peers update their files
+				if(newpeer.getState() == FULLYSYNCED){
+					System.out.println("Getting  " + p.getIp());
+					ArrayList<FileElement> remoteList = newpeer.getFiles();
+										
+					for(int j = 0; j < remoteList.size(); j++){
+						//downloadFile
+						if(!localList.contains(remoteList.get(j))){
+							fileAdded(remoteList.get(j));
+						}							
+					}
+					
+					break;
+				}
+			} catch (RemoteException e) {
+				//e.printStackTrace();
+			} catch (NullPointerException e){
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	private void notifyPeersRemoved(FileElement file){
 		ArrayList<Peer> peerList = peers.getPeers();
 		
@@ -171,7 +222,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 					//e.printStackTrace();
 				}
 				//RMI function call - Other peers update their files
-				if(newpeer.getState() == CONNECTED)
+				if(newpeer.getState() != DISCONNECTED)
 					newpeer.fileRemoved(file);
 			} catch (RemoteException e) {
 				//e.printStackTrace();
@@ -205,7 +256,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 					//e.printStackTrace();
 				}
 				//RMI function call - Other peers update their files
-				if(newpeer.getState() == CONNECTED)
+				if(newpeer.getState() != DISCONNECTED)
 					newpeer.fileAdded(file);
 			} catch (RemoteException e) {
 				//e.printStackTrace();
@@ -218,14 +269,49 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	@Override
 	//server method
 	public void fileAdded(FileElement file) throws RemoteException {
-		downloadFile(file);
+		//Create an instance of FileElement class to store the attributes for the new file
+		FileElement newElement = new FileElement(file.filename, file.filesize, chunkSize, "rmi://"+this.getIp()+":"+this.getPort()+"/PeerService", 1, true);
 		
+		//Fill the block_complete array since the file is local and complete
+		Arrays.fill(newElement.block_complete, true);
+				
+		//If localFiles vector already contains the filename, error out
+		if ((localList.contains(newElement)))
+		{
+			System.out.println("ERROR: File already exists on local host");
+			return;
+		}
+		
+		//Insert FileElement object into arraylist
+		localList.add(newElement);
+		
+		if(filesToProcess.isEmpty())
+			this.state = SYNCING;
+		
+		filesToProcess.add(file);
+		
+		downloadFile(file);
+		filesToProcess.remove();
+		
+		if(filesToProcess.isEmpty())
+			this.state = FULLYSYNCED;
 	}
 	
 	@Override
 	//server method
 	public void fileRemoved(FileElement file) throws RemoteException {
 		//remove local copy
+		localList.remove(file);
+		
+		if(filesToProcess.isEmpty())
+			this.state = SYNCING;
+		
+		filesToProcess.add(file);
+		
+		filesToProcess.remove();
+		
+		if(filesToProcess.isEmpty())
+			this.state = FULLYSYNCED;
 		removeFile(file);
 	}
 	
@@ -237,6 +323,10 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	}
 	
 	private int removeFile(FileElement file){
+		
+		localList.remove(file);
+		
+		
 		System.out.println("Removing local file");
 		 String fileName = "file.txt";
 		    // A File object to represent the filename
@@ -334,7 +424,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		{
 			//Connect to remote host
 			PeerInterface newpeer = (PeerInterface)Naming.lookup(server);
-			if(newpeer.getState() == CONNECTED){
+			if(newpeer.getState() != DISCONNECTED){
 				//	Chunk buffer for downloaded data
 				//System.out.println("TRYING TO GET FILE BUFFER");
 				filebuffer = newpeer.uploadFileChunk(file.filename, chunkID*chunkSize, chunkSize);
@@ -386,6 +476,12 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			System.out.println("error in uploadFileChunk: "+e.getMessage());
 		}
 		return null;
+	}
+
+	@Override
+	public ArrayList<FileElement> getFiles() throws RemoteException {
+		// TODO Auto-generated method stub
+		return localList;
 	}
 	
 	

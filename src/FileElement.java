@@ -26,4 +26,15 @@ public class FileElement implements Serializable
 		this.version = version;
 		this.filecomplete = complete;
 	}
+	
+	
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		if(((FileElement)obj).filename.equals(this.filename))
+			return true;
+		else
+			return false;
+	}
+	
 }
