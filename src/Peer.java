@@ -91,7 +91,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		}                                       
 		
 		//Create an instance of FileElement class to store the attributes for the new file
-		FileElement newElement = new FileElement(filename, file.length(), chunkSize, "rmi://"+this.getIp()+":"+this.getPort()+"/PeerService", 1, true);
+		FileElement newElement = new FileElement(filename, file.length(), chunkSize, "rmi://"+this.getIp()+":"+this.getPort()+"/PeerService", false, true);
 		
 		//Fill the block_complete array since the file is local and complete
 		Arrays.fill(newElement.block_complete, true);
@@ -144,8 +144,20 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	}
 	
 	//event calls this
-	public void changeFile(File file){
+	public void changeFile(File file)
+	{
+		String filename = file.getName();
 		
+		FileElement fe = null;
+		
+		for(int i = 0; i < localList.size(); i ++){
+			if(localList.get(i).filename.equals(filename)){
+				fe = localList.get(i);
+				localList.remove(i);
+			}
+		}
+		
+		fe.changed = true;
 	}
 	
 	public void connected(){
@@ -265,12 +277,12 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			}
 		}
 	}
-
+	
 	@Override
 	//server method
 	public void fileAdded(FileElement file) throws RemoteException {
 		//Create an instance of FileElement class to store the attributes for the new file
-		FileElement newElement = new FileElement(file.filename, file.filesize, chunkSize, "rmi://"+this.getIp()+":"+this.getPort()+"/PeerService", 1, true);
+		FileElement newElement = new FileElement(file.filename, file.filesize, chunkSize, "rmi://"+this.getIp()+":"+this.getPort()+"/PeerService", false, true);
 		
 		//Fill the block_complete array since the file is local and complete
 		Arrays.fill(newElement.block_complete, true);
@@ -317,9 +329,13 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	
 	@Override
 	//server method
-	public void fileChanged(FileElement file) throws RemoteException {
-		//reobtain local copy
-		
+	public void fileChanged(FileElement file) throws RemoteException
+	{	
+		//File remotely has been changed, update local copy if necessary
+		if (file.changed = false)
+		{
+
+		}
 	}
 	
 	private int removeFile(FileElement file){
