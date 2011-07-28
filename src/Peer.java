@@ -351,17 +351,18 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	@Override
 	//REMOTE functional call
 	//File remotely has been changed, update local copy if necessary
-	public void fileChanged(FileElement file) throws RemoteException
+	public void fileChanged(FileElement remotefile) throws RemoteException
 	{	
 		
-		File f = new File(downloadFolder + file.filename);
+		File localFile = new File(downloadFolder + remotefile.filename);
 		
-		FileElement localFile = localList.get(localList.indexOf(file));
+		FileElement localFileElement = localList.get(localList.indexOf(remotefile));
+		
 		//Local file dirty bit not set, so can just replace the local file.
-		if ((localFile.changed == false) && (file.changed == true))
+		if ((localFileElement.changed == false) && (remotefile.changed == true))
 		{
 			//Remove the file from the filesystem
-			boolean delsuccess = f.delete();
+			boolean delsuccess = localFile.delete();
 			
 			if (delsuccess == false)
 			{
@@ -372,18 +373,26 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			if(filesToProcess.isEmpty())
 				this.state = SYNCING;
 			
-			filesToProcess.add(file);
+			filesToProcess.add(remotefile);
 			
-			downloadFile(file);
+			downloadFile(remotefile);
 			filesToProcess.remove();
 			
 			if(filesToProcess.isEmpty())
 				this.state = FULLYSYNCED;
+			
+			//Flag that indicates the file was updated by a remote host
+			localFileElement.changedRemotely = true;
 		}
-		else if (localFile.changed == true)
+		else if ((localFileElement.changed == true) && (localFileElement.changedRemotely == false))
 		{
-			File newfile = new File(downloadFolder + file.filename + f.lastModified());
-			f.renameTo(newfile);
+			File newfile = new File(downloadFolder + remotefile.filename + localFile.lastModified());
+			localFile.renameTo(newfile);
+		}
+		else
+		{
+			localFileElement.changed = false;
+			localFileElement.changedRemotely = false;
 		}
 	}
 	
@@ -404,6 +413,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			System.out.println("file has been changed!!!!!!!!!");
 			fe.changed = true;
 			notifyPeersChanged(fe);
+			fe.changed = false;
 		}
 	}
 	

@@ -12,6 +12,7 @@ public class FileElement implements Serializable
 	public String currentServer;
 	//public ArrayList<FileElement> remoteList = new ArrayList<FileElement>();
 	public boolean changed;
+	public boolean changedRemotely;
 	
 	
 	public FileElement(String filename, long length, int chunkSize, String server, boolean changed, boolean complete) {
@@ -25,6 +26,7 @@ public class FileElement implements Serializable
 		
 		this.changed = changed;
 		this.filecomplete = complete;
+		this.changedRemotely = false;
 	}
 	
 	
