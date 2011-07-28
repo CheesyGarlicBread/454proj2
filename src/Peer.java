@@ -99,7 +99,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		//If localFiles vector already contains the filename, error out
 		if ((localList.contains(newElement)))
 		{
-			System.out.println("ERROR: File already exists on local host");
+			System.out.println("ERROR: File already exists on local host addFile");
 			return;
 		}
 		
@@ -308,7 +308,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		//If localFiles vector already contains the filename, error out
 		if ((localList.contains(newElement)))
 		{
-			System.out.println("ERROR: File already exists on local host");
+			System.out.println("ERROR: File already exists on local host fileAdded");
 			return;
 		}
 		
@@ -369,7 +369,16 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			}
 			
 			//Re-download the file from the host
+			if(filesToProcess.isEmpty())
+				this.state = SYNCING;
+			
+			filesToProcess.add(file);
+			
 			downloadFile(file);
+			filesToProcess.remove();
+			
+			if(filesToProcess.isEmpty())
+				this.state = FULLYSYNCED;
 		}
 		else
 		{
@@ -377,7 +386,16 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			f.renameTo(newfile);
 			
 			//Re-download the file from the host
+			if(filesToProcess.isEmpty())
+				this.state = SYNCING;
+			
+			filesToProcess.add(file);
+			
 			downloadFile(file);
+			filesToProcess.remove();
+			
+			if(filesToProcess.isEmpty())
+				this.state = FULLYSYNCED;
 		}
 	}
 	
@@ -394,8 +412,10 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			}
 		}
 		
-		fe.changed = true;
-		notifyPeersChanged(fe);
+		if(!filesToProcess.contains(fe)){
+			fe.changed = true;
+			notifyPeersChanged(fe);
+		}
 		
 	}
 	

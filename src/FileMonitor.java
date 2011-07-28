@@ -164,7 +164,7 @@ public class FileMonitor
       // Loop over the registered files and see which have changed.
       // Use a copy of the list in case listener wants to alter the
       // list within its fileChanged method.
-      
+
       Collection directories = new ArrayList (directories_.keySet());
       for (Iterator i = directories.iterator(); i.hasNext(); ) {
           File directory = (File) i.next();
