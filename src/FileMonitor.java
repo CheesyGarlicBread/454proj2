@@ -297,7 +297,7 @@ public class FileMonitor
 				  File f = new File(strLine1.substring(0, strLine1.indexOf("|")));
 				  Long l =  Long.parseLong(strLine1.substring(strLine1.indexOf("|") + 1,strLine1.length()));
 				//  System.out.println(l);
-				  //directories_.put(f,l);
+				  directories_.put(f,l);
 			  }
 			  //Close the input stream
 			  in1.close();
