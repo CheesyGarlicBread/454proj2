@@ -3,6 +3,7 @@ import java.io.*;
 import java.net.*;
 import java.net.UnknownHostException;
 import java.rmi.*;
+import java.util.Arrays;
 
 public class Driver{
 
@@ -45,6 +46,7 @@ public class Driver{
 		    if(hashMapFiles.exists() && hashMapFolders.exists()){
 		    	System.out.println("Hash maps exist!");
 		    	monitor.restoreHashMaps();
+		    	createFilesInPeer();
 		    }else{
 		    	System.out.println("Hash maps dont exist!");
 		    	// Add folder to listen for
@@ -52,9 +54,10 @@ public class Driver{
 		    	// Add a dummy listener		    
 		    	monitor.addListener (new FileListenerImpl(peer));
 		    }
+		    monitor.start();
 		    
 		    peer.connected();
-		    monitor.start();
+		    
 			while(true){
 
 			}
@@ -73,7 +76,43 @@ public class Driver{
 		
 		
 	}
-	
+	public static void createFilesInPeer(){
+		
+		try {
+			  FileInputStream fstream = new FileInputStream("files.hckc");
+			  DataInputStream in = new DataInputStream(fstream);
+			  BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			  String strLine;		
+			  while ((strLine = br.readLine()) != null)   {
+
+				  File f = new File(strLine.substring(0, strLine.indexOf("|")));
+				  Long l = Long.parseLong(strLine.substring(strLine.indexOf("|") + 1,strLine.length())); 
+
+				//Create an instance of FileElement class to store the attributes for the new file
+				FileElement newElement = new FileElement(f.getName(), f.length(), peer.chunkSize, "rmi://"+peer.getIp()+":"+peer.getPort()+"/PeerService", false, true);
+					
+				//Fill the block_complete array since the file is local and complete
+				Arrays.fill(newElement.block_complete, true);
+							
+				//If localFiles vector already contains the filename, error out
+				if ((peer.getFiles().contains(newElement)))
+				{
+					System.out.println("ERROR: File already exists on local host addFile");
+					break;
+				}
+					
+				//Insert FileElement object into arraylist
+				peer.getFiles().add(newElement);
+			  }
+			  //Close the input stream
+			  in.close();			  
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+  }
 
 
 

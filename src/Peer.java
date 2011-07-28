@@ -16,6 +16,8 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	
 	
 	private ArrayList<FileElement> localList = new ArrayList<FileElement>();
+
+
 	private Queue<FileElement> filesToProcess = new LinkedList<FileElement>();
 	
 	final byte CONNECTED = 0;
