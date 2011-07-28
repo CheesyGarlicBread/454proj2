@@ -143,23 +143,6 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		}
 	}
 	
-	//event calls this
-	public void changeFile(File file)
-	{
-		String filename = file.getName();
-		
-		FileElement fe = null;
-		
-		for(int i = 0; i < localList.size(); i ++){
-			if(localList.get(i).filename.equals(filename)){
-				fe = localList.get(i);
-				localList.remove(i);
-			}
-		}
-		
-		fe.changed = true;
-	}
-	
 	public void connected(){
 		notifyPeersConnected();
 		this.state = FULLYSYNCED;
@@ -331,14 +314,51 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	}
 	
 	@Override
-	//server method
+	//REMOTE functional call
+	//File remotely has been changed, update local copy if necessary
 	public void fileChanged(FileElement file) throws RemoteException
 	{	
-		//File remotely has been changed, update local copy if necessary
+		
+		File f = new File(downloadFolder + file.filename);
+		
+		//Local file dirty bit not set, so can just replace the local file.
 		if (file.changed = false)
 		{
-
+			//Remove the file from the filesystem
+			boolean delsuccess = f.delete();
+			
+			if (delsuccess == false)
+			{
+				System.out.println("Failed to replace local file with updated version");
+			}
+			
+			//Re-download the file from the host
+			downloadFile(file);
 		}
+		else
+		{
+			File newfile = new File(downloadFolder + file.filename + f.lastModified());
+			f.renameTo(newfile);
+			
+			//Re-download the file from the host
+			downloadFile(file);
+		}
+	}
+	
+	//LOCAL file change
+	public void changeFile(File file)
+	{
+		String filename = file.getName();
+		
+		FileElement fe = null;
+		
+		for(int i = 0; i < localList.size(); i ++){
+			if(localList.get(i).filename.equals(filename)){
+				fe = localList.get(i);
+			}
+		}
+		
+		fe.changed = true;
 	}
 	
 	private int removeLocalFile(FileElement file){
