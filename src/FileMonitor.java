@@ -32,7 +32,7 @@ public class FileMonitor
   private HashMap<File, Long>     files_;       // File -> Long
   private HashMap<File, Long>	  directories_;
   private Collection  listeners_;   // of WeakReference(FileListener)
-   
+  private long pollingInterval;
 
   /**
    * Create a file monitor instance with specified polling interval.
@@ -46,10 +46,13 @@ public class FileMonitor
     listeners_ = new ArrayList();
 
     timer_ = new Timer (true);
-    timer_.schedule (new FileMonitorNotifier(), 0, pollingInterval);
+    this.pollingInterval = pollingInterval;
+    
   }
 
-
+  public void start(){
+	  timer_.schedule (new FileMonitorNotifier(), 0, pollingInterval);  
+  }
   
   /**
    * Stop the file monitor polling.
