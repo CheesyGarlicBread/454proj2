@@ -298,7 +298,18 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	
 	@Override
 	//server method
-	public void fileAdded(FileElement file) throws RemoteException {
+	public void fileAdded(FileElement file) throws RemoteException {		
+		if(filesToProcess.isEmpty())
+			this.state = SYNCING;
+		
+		filesToProcess.add(file);
+		
+		downloadFile(file);
+		filesToProcess.remove();
+		
+		if(filesToProcess.isEmpty())
+			this.state = FULLYSYNCED;
+		
 		//Create an instance of FileElement class to store the attributes for the new file
 		FileElement newElement = new FileElement(file.filename, file.filesize, chunkSize, "rmi://"+this.getIp()+":"+this.getPort()+"/PeerService", false, true);
 		
@@ -314,17 +325,6 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		
 		//Insert FileElement object into arraylist
 		localList.add(newElement);
-		
-		if(filesToProcess.isEmpty())
-			this.state = SYNCING;
-		
-		filesToProcess.add(file);
-		
-		downloadFile(file);
-		filesToProcess.remove();
-		
-		if(filesToProcess.isEmpty())
-			this.state = FULLYSYNCED;
 	}
 	
 	@Override
