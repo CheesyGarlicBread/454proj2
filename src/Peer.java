@@ -401,6 +401,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		}
 		
 		if(!filesToProcess.contains(fe)){
+			System.out.println("file has been changed!!!!!!!!!");
 			fe.changed = true;
 			notifyPeersChanged(fe);
 		}
@@ -448,7 +449,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	{
 		System.out.println("downloadFile() from " + file.currentServer);
 		//RandomAccessFile to write chunks to
-		File newfile = new File(downloadFolder + file.filename);
+		File newfile = new File(file.filename);
 		//System.out.println("saving file to " + file.filename);
 		RandomAccessFile output = null;
 		
@@ -495,6 +496,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			e.printStackTrace();
 			
 		}
+		newfile.renameTo(new File("downloadFolder + file.filename"));
 		//System.out.println("Finished downloadFile()");
 		return 0;
 	}
