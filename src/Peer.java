@@ -370,8 +370,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		if ((localFileElement.changed == false) && (remotefile.changed == true))
 		{
 			System.out.println("RMI: Remote change signaled, local file HAS NOT been changed");
-			
-			localList.remove(localFileElement);
+					
 			
 			//Remove the file from the filesystem
 			boolean delsuccess = localFile.delete();
@@ -489,7 +488,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	{
 		
 		//System.out.println("downloadFile() from " + file.currentServer);
-		if(localList.contains(file)) return 1;
+		//if(localList.contains(file)) return 1;
 		
 		//RandomAccessFile to write chunks to
 		File newfile = new File(file.filename);
