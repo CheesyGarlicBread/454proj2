@@ -399,7 +399,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		{
 			System.out.println("RMI: Remote change signaled, local file HAS been changed");
 			
-			File newfile = new File(downloadFolder + remotefile.filename + localFile.lastModified());
+			File newfile = new File(downloadFolder + remotefile.filename + ".conflict" + localFile.lastModified());
 			localFile.renameTo(newfile);
 			
 			//Re-download the file from the host
