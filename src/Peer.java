@@ -439,9 +439,11 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 
 		if(!filesToProcess.contains(fe)){
 			System.out.println("file has been changed!!!!!!!!!");
-			fe.changed = true;
-			notifyPeersChanged(fe);
-			fe.changed = false;
+			if(fe != null){
+				fe.changed = true;
+				notifyPeersChanged(fe);
+				fe.changed = false;
+			}
 		}
 		
 		fe.changedRemotely = false;
