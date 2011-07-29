@@ -517,7 +517,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		{
 //			if (file.block_complete[i] == false)
 //			{
-			System.out.println(targethost.currentServer);
+			//System.out.println(targethost.currentServer);
 				filebuffer = downloadFileChunk(file, i, chunkSize, targethost.currentServer);
 				//System.out.println("FileBuffer size: " + filebuffer.length);
 				try {
@@ -603,7 +603,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			System.out.println("error in uploadFileChunk: "+e.getMessage());
 		}
 		return null;
-	}
+	}	
 
 	@Override
 	public ArrayList<FileElement> getFiles() throws RemoteException {
