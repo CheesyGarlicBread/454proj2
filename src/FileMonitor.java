@@ -205,10 +205,15 @@ public class FileMonitor
         long newModifiedTime  = file.exists() ? file.lastModified() : -1;
 
         // Check if file has changed
-        if (newModifiedTime != lastModifiedTime) {
+        if (newModifiedTime != lastModifiedTime || newModifiedTime == -1 || lastModifiedTime == -2) {
 
-          // Register new modified time
+          // Register new modified time        
           files_.put (file, new Long (newModifiedTime));
+          
+          //remove file from list
+          if(newModifiedTime == -1){
+        	  files_.remove(file);
+          }
 
           // Notify listeners
           for (Iterator j = listeners_.iterator(); j.hasNext(); ) {

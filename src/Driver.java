@@ -38,8 +38,7 @@ public class Driver{
 			 // Create the monitor
 		    FileMonitor monitor = new FileMonitor (2000);
 		    
-		    File folder = new File(downloadFolder);
-		    
+		    File folder = new File(downloadFolder); 
 		    File hashMapFiles = new File("files.hckc");
 		    File hashMapFolders = new File("folders.hckc");
 		    
@@ -52,8 +51,8 @@ public class Driver{
 		    	// Add folder to listen for
 		    	monitor.addDirectory(folder);		    
 		    	// Add a dummy listener		    
-		    	monitor.addListener (new FileListenerImpl(peer));
 		    }
+	    	monitor.addListener (new FileListenerImpl(peer));
 		    monitor.start();
 		    
 		    peer.connected();
