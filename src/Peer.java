@@ -365,7 +365,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		File localFile = new File(downloadFolder + remotefile.filename);
 		
 		FileElement localFileElement = localList.get(localList.indexOf(remotefile));
-		
+		System.out.println("Local File version: "+ localFileElement.version + " & remote file version: " + remotefile.version);
 		//Local file dirty bit not set, so can just replace the local file.
 		if ((localFileElement.version < remotefile.version))
 		{
