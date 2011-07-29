@@ -173,19 +173,25 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
 				}
+				
 				//RMI function call - Other peers update their files
-				if(newpeer.getState() == FULLYSYNCED){
-					System.out.println("Getting  " + p.getIp());
-					ArrayList<FileElement> remoteList = newpeer.getFiles();
-										
-					for(int j = 0; j < remoteList.size(); j++){
-						//downloadFile
-						if(!localList.contains(remoteList.get(j))){
-							fileAdded(remoteList.get(j));
-						}							
-					}
-					
-					break;
+				ArrayList<FileElement> remoteList = newpeer.getFiles();
+				System.out.println("Remote list: " + remoteList);
+				System.out.println("Getting  " + p.getIp());											
+				//get files that i dont have
+				for(int j = 0; j < remoteList.size(); j++){
+					//downloadFile
+					if(!localList.contains(remoteList.get(j))){
+						fileAdded(remoteList.get(j));
+					}							
+				}														
+				
+				//tell others to get files they dont have
+				for(int j = 0; j < localList.size(); j++){
+					//downloadFile
+					if(!remoteList.contains(localList.get(j))){
+						newpeer.fileAdded(localList.get(j));
+					}							
 				}
 			} catch (RemoteException e) {
 				//e.printStackTrace();
@@ -338,7 +344,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		if(filesToProcess.isEmpty())
 			this.state = SYNCING;
 		
-		filesToProcess.add(file);
+		filesToProcess.add(file);	
 		
 		removeLocalFile(file);
 		
@@ -444,32 +450,29 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		
 		
 		System.out.println("Removing local file");
-		 String fileName = "file.txt";
+		 
 		    // A File object to represent the filename
 		    File f = new File(downloadFolder + file.filename);
 
 		    // Make sure the file or directory exists and isn't write protected
 		    if (!f.exists())
-		      throw new IllegalArgumentException(
-		          "Delete: no such file or directory: " + fileName);
+		    	System.out.println("File does not exist to delete.");
 
 		    if (!f.canWrite())
-		      throw new IllegalArgumentException("Delete: write protected: "
-		          + fileName);
+		      System.out.println("Cant delete, write protected");
 
 		    // If it is a directory, make sure it is empty
 		    if (f.isDirectory()) {
 		      String[] files = f.list();
 		      if (files.length > 0)
-		        throw new IllegalArgumentException(
-		            "Delete: directory not empty: " + fileName);
+		        System.out.println("Directory is not empty");
 		    }
 
 		    // Attempt to delete it
 		    boolean success = f.delete();
 
 		    if (!success)
-		      throw new IllegalArgumentException("Delete: deletion failed");
+		      System.out.println("Deletion failed");
 		    
 		    return 1;
 	}
@@ -477,9 +480,12 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	//client will call this to download a file
 	private int downloadFile(FileElement file)
 	{
-		System.out.println("downloadFile() from " + file.currentServer);
+		
+		//System.out.println("downloadFile() from " + file.currentServer);
+		if(localList.contains(file)) return 1;
+		
 		//RandomAccessFile to write chunks to
-		File newfile = new File(file.filename);
+		File newfile = new File(downloadFolder + file.filename);
 		//System.out.println("saving file to " + file.filename);
 		RandomAccessFile output = null;
 		
@@ -508,6 +514,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		{
 //			if (file.block_complete[i] == false)
 //			{
+			System.out.println(targethost.currentServer);
 				filebuffer = downloadFileChunk(file, i, chunkSize, targethost.currentServer);
 				//System.out.println("FileBuffer size: " + filebuffer.length);
 				try {
@@ -526,7 +533,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			e.printStackTrace();
 			
 		}
-		newfile.renameTo(new File(downloadFolder + file.filename));
+		//newfile.renameTo(new File(file.filename));
 		//System.out.println("Finished downloadFile()");
 		return 0;
 	}
