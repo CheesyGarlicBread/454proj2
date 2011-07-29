@@ -449,7 +449,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		localList.remove(file);
 		
 		
-		System.out.println("Removing local file");
+		System.out.println("Removing local file" + file.filename);
 		 
 		    // A File object to represent the filename
 		    File f = new File(downloadFolder + file.filename);
