@@ -445,8 +445,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 				fe.changed = false;
 			}
 		}
-		
-		fe.changedRemotely = false;
+		if (fe != null) fe.changedRemotely = false;
 	}
 	
 	private int removeLocalFile(FileElement file)
