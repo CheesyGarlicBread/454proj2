@@ -393,7 +393,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 				this.state = FULLYSYNCED;
 			
 			//Flag that indicates the file was updated by a remote host
-			localFileElement.version = remotefile.version;
+			//localFileElement.version = remotefile.version;
 			localFileElement.changedRemotely = true;
 		}
 		else if (localFileElement.version == remotefile.version)
