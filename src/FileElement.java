@@ -10,7 +10,6 @@ public class FileElement implements Serializable
 	public boolean filecomplete;
 	public int[] block_available;
 	public String currentServer;
-	//public ArrayList<FileElement> remoteList = new ArrayList<FileElement>();
 	public boolean changed;
 	public boolean changedRemotely;
 	
@@ -36,7 +35,6 @@ public class FileElement implements Serializable
 	
 	@Override
 	public boolean equals(Object obj) {
-		// TODO Auto-generated method stub	
 		if(((FileElement)obj).filename.equals(this.filename))
 			return true;
 		else
@@ -45,7 +43,6 @@ public class FileElement implements Serializable
 	
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		return filename + "v" + version;
 	}
 	
