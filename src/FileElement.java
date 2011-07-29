@@ -14,6 +14,7 @@ public class FileElement implements Serializable
 	public boolean changed;
 	public boolean changedRemotely;
 	
+	public int version = 0;
 	
 	public FileElement(String filename, long length, int chunkSize, String server, boolean changed, boolean complete) {
 		this.filename = filename;

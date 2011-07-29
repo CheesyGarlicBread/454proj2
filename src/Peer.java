@@ -367,10 +367,10 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		FileElement localFileElement = localList.get(localList.indexOf(remotefile));
 		
 		//Local file dirty bit not set, so can just replace the local file.
-		if ((localFileElement.changed == false) && (remotefile.changed == true))
+		if ((localFileElement.version < remotefile.version))
 		{
 			System.out.println("RMI: Remote change signaled, local file HAS NOT been changed");
-					
+			
 			
 			//Remove the file from the filesystem
 			boolean delsuccess = localFile.delete();
@@ -393,9 +393,10 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 				this.state = FULLYSYNCED;
 			
 			//Flag that indicates the file was updated by a remote host
+			localFileElement.version = remotefile.version;
 			localFileElement.changedRemotely = true;
 		}
-		else if ((localFileElement.changed == true) && (localFileElement.changedRemotely == false) && (remotefile.changed == true))
+		else if (localFileElement.version == remotefile.version)
 		{
 			System.out.println("RMI: Remote change signaled, local file HAS been changed");
 			
@@ -440,6 +441,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			System.out.println("file has been changed!!!!!!!!!");
 			if(fe != null){
 				fe.changed = true;
+				fe.version++;
 				notifyPeersChanged(fe);
 				fe.changed = false;
 			}
