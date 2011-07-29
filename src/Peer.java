@@ -602,4 +602,5 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 	}
 	
 	
+	//API functions
 }
