@@ -93,7 +93,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		}                                       
 		
 		//Create an instance of FileElement class to store the attributes for the new file
-		FileElement newElement = new FileElement(filename, file.length(), chunkSize, "rmi://"+this.getIp()+":"+this.getPort()+"/PeerService", false, true);
+		FileElement newElement = new FileElement(filename, file.length(), chunkSize, "rmi://"+this.getIp()+":"+this.getPort()+"/PeerService", false, true,0);
 		
 		//Fill the block_complete array since the file is local and complete
 		Arrays.fill(newElement.block_complete, true);
@@ -319,7 +319,7 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 			this.state = FULLYSYNCED;
 		
 		//Create an instance of FileElement class to store the attributes for the new file
-		FileElement newElement = new FileElement(file.filename, file.filesize, chunkSize, "rmi://"+this.getIp()+":"+this.getPort()+"/PeerService", false, true);
+		FileElement newElement = new FileElement(file.filename, file.filesize, chunkSize, "rmi://"+this.getIp()+":"+this.getPort()+"/PeerService", false, true,0);
 		
 		//Fill the block_complete array since the file is local and complete
 		Arrays.fill(newElement.block_complete, true);

@@ -29,13 +29,14 @@ public class FileMonitor
   private HashMap<File, Long>	  directories_;
   private Collection<FileListener>  listeners_;   // of WeakReference(FileListener)
   private long pollingInterval;
+  private Peer localPeer;
 
   /**
    * Create a file monitor instance with specified polling interval.
    * 
    * @param pollingInterval  Polling interval in milli seconds.
    */
-  public FileMonitor (long pollingInterval)
+  public FileMonitor (long pollingInterval, Peer localPeer)
   {
     files_     = new HashMap<File, Long>();
     directories_ = new HashMap<File, Long>();
@@ -43,6 +44,7 @@ public class FileMonitor
 
     timer_ = new Timer (true);
     this.pollingInterval = pollingInterval;
+    this.localPeer = localPeer;
     
   }
 
@@ -248,7 +250,11 @@ public class FileMonitor
 			Collection<File> files = new ArrayList (files_.keySet());
 		    for (Iterator i = files.iterator(); i.hasNext(); ) {
 		    	File file = (File) i.next();
-		    	out.write(file.getAbsolutePath() + "|" + files_.get(file) + "\n");
+		    	int version = 0;
+		    	if(!localPeer.getFiles().isEmpty()){		    				    		
+		    		version = localPeer.getFiles().get(localPeer.getFiles().indexOf(new FileElement(file.getName()))).version;
+		    	}
+		    	out.write(file.getAbsolutePath() + "|" + files_.get(file) + ">"+version+"\n");
 		    }	
 			out.close();
 			
@@ -264,6 +270,7 @@ public class FileMonitor
 			
 			System.out.println(files_);
 			System.out.println(directories_);
+			System.out.println(localPeer.getFiles());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -283,7 +290,7 @@ public class FileMonitor
 			  while ((strLine = br.readLine()) != null)   {
 			  // Print the content on the console
 				  File f = new File(strLine.substring(0, strLine.indexOf("|")));
-				  Long l = Long.parseLong(strLine.substring(strLine.indexOf("|") + 1,strLine.length())); 
+				  Long l = Long.parseLong(strLine.substring(strLine.indexOf("|") + 1,strLine.indexOf(">")));				  
 				//  System.out.println(strLine.substring(strLine.indexOf("|") + 1,strLine.length()));
 				//  System.out.println(l);
 				  files_.put(f,l);

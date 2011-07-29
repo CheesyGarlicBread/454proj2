@@ -15,8 +15,10 @@ public class FileElement implements Serializable
 	public boolean changedRemotely;
 	
 	public int version = 0;
-	
-	public FileElement(String filename, long length, int chunkSize, String server, boolean changed, boolean complete) {
+	public FileElement(String filename) {
+		this(filename,1,1,null,false,false,0);
+	}
+	public FileElement(String filename, long length, int chunkSize, String server, boolean changed, boolean complete, int version) {
 		this.filename = filename;
 		this.filesize = length;
 		this.block_complete = new boolean[(int) (Math.ceil(length / chunkSize) + 1)];
@@ -28,12 +30,13 @@ public class FileElement implements Serializable
 		this.changed = changed;
 		this.filecomplete = complete;
 		this.changedRemotely = false;
+		this.version = version;
 	}
 	
 	
 	@Override
 	public boolean equals(Object obj) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub	
 		if(((FileElement)obj).filename.equals(this.filename))
 			return true;
 		else
@@ -43,7 +46,7 @@ public class FileElement implements Serializable
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return filename;
+		return filename + "v" + version;
 	}
 	
 	

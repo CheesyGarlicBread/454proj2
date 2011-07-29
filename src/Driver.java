@@ -36,7 +36,7 @@ public class Driver{
 			//check folder for changes
 			System.out.println("Watching for file changes in " + downloadFolder);
 			 // Create the monitor
-		    FileMonitor monitor = new FileMonitor (2000);
+		    FileMonitor monitor = new FileMonitor (2000,peer);
 		    
 		    File folder = new File(downloadFolder); 
 		    File hashMapFiles = new File("files.hckc");
@@ -79,10 +79,10 @@ public class Driver{
 			  while ((strLine = br.readLine()) != null)   {
 
 				  File f = new File(strLine.substring(0, strLine.indexOf("|")));
-				  Long l = Long.parseLong(strLine.substring(strLine.indexOf("|") + 1,strLine.length())); 
-
+				  Long l = Long.parseLong(strLine.substring(strLine.indexOf("|") + 1,strLine.indexOf(">"))); 
+				  int version = Integer.parseInt(strLine.substring(strLine.indexOf(">") + 1,strLine.length()));
 				//Create an instance of FileElement class to store the attributes for the new file
-				FileElement newElement = new FileElement(f.getName(), f.length(), peer.chunkSize, "rmi://"+peer.getIp()+":"+peer.getPort()+"/PeerService", false, true);
+				FileElement newElement = new FileElement(f.getName(), f.length(), peer.chunkSize, "rmi://"+peer.getIp()+":"+peer.getPort()+"/PeerService", false, true,version);
 					
 				//Fill the block_complete array since the file is local and complete
 				Arrays.fill(newElement.block_complete, true);
