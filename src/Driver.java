@@ -86,7 +86,7 @@ public class Driver{
 					
 				//Fill the block_complete array since the file is local and complete
 				Arrays.fill(newElement.block_complete, true);
-							
+				
 				//If localFiles vector already contains the filename, error out
 				if ((peer.getFiles().contains(newElement)))
 				{
