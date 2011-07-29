@@ -39,4 +39,11 @@ public class FileElement implements Serializable
 			return false;
 	}
 	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return filename;
+	}
+	
+	
 }

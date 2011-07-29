@@ -8,10 +8,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.lang.ref.WeakReference;
 
 /**
  * Class for monitoring changes in disk files.
@@ -31,7 +27,7 @@ public class FileMonitor
   private Timer       timer_;
   private HashMap<File, Long>     files_;       // File -> Long
   private HashMap<File, Long>	  directories_;
-  private Collection  listeners_;   // of WeakReference(FileListener)
+  private Collection<FileListener>  listeners_;   // of WeakReference(FileListener)
   private long pollingInterval;
 
   /**
@@ -43,7 +39,7 @@ public class FileMonitor
   {
     files_     = new HashMap<File, Long>();
     directories_ = new HashMap<File, Long>();
-    listeners_ = new ArrayList();
+    listeners_ = new ArrayList<FileListener>();
 
     timer_ = new Timer (true);
     this.pollingInterval = pollingInterval;
@@ -134,15 +130,15 @@ public class FileMonitor
   {
     // Don't add if its already there
     for (Iterator i = listeners_.iterator(); i.hasNext(); ) {
-      WeakReference reference = (WeakReference) i.next();
-      FileListener listener = (FileListener) reference.get();
+      
+      FileListener listener = (FileListener) i.next();
       if (listener == fileListener)
         return;
     }
 
     // Use WeakReference to avoid memory leak if this becomes the
     // sole reference to the object.
-    listeners_.add (new WeakReference (fileListener));
+    listeners_.add (fileListener);
   }
 
 
@@ -155,8 +151,8 @@ public class FileMonitor
   public void removeListener (FileListener fileListener)
   {
     for (Iterator i = listeners_.iterator(); i.hasNext(); ) {
-      WeakReference reference = (WeakReference) i.next();
-      FileListener listener = (FileListener) reference.get();
+     
+      FileListener listener = (FileListener) i.next();
       if (listener == fileListener) {
         i.remove();
         break;
@@ -206,7 +202,7 @@ public class FileMonitor
 
         // Check if file has changed
         if (newModifiedTime != lastModifiedTime || newModifiedTime == -1 || lastModifiedTime == -2) {
-
+        	System.out.println("File has been changed");
           // Register new modified time        
           files_.put (file, new Long (newModifiedTime));
           
@@ -217,8 +213,9 @@ public class FileMonitor
 
           // Notify listeners
           for (Iterator j = listeners_.iterator(); j.hasNext(); ) {
-            WeakReference reference = (WeakReference) j.next();
-            FileListener listener = (FileListener) reference.get();
+        	 System.out.println("Iterating through listeners");
+            
+            FileListener listener = (FileListener) j.next();
 
             // Remove from list if the back-end object has been GC'd
             if (listener == null){
