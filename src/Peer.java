@@ -454,9 +454,6 @@ public class Peer extends java.rmi.server.UnicastRemoteObject implements PeerInt
 		    // A File object to represent the filename
 		    File f = new File(downloadFolder + file.filename);
 
-	    // A File object to represent the filename
-	    File f = new File(downloadFolder + file.filename);
-
 	    // Make sure the file or directory exists and isn't write protected
 	    if (!f.exists())
 	    	System.out.println("File does not exist to delete.");
